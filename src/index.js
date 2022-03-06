@@ -4,6 +4,10 @@ require('dotenv').config(); //integra le variabili globali
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
+const Database = require("./config/Database");
+const db = new Database();
+db.connect();
+
 //array con tutti gli eventi
 const eventFiles = fs.readdirSync('src/events').filter(file => file.endsWith('.js'));
 
@@ -30,7 +34,7 @@ for (const file of commandFiles) //cicla tra tutti i file
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return;
 
-	const command = client.commands.get(interaction.commandName);
+	const command = client.commands.get(interaction.commandName); //assume nome comando
 
 	if (!command) return;
 

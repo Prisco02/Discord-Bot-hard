@@ -1,5 +1,6 @@
 const { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const EventSettings = require("./models/EventSettings");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -44,63 +45,63 @@ module.exports = {
                     .setEmoji('🚷'),
 			);
         const weapons = new MessageActionRow()
-        .addComponents(
-            new MessageSelectMenu()
-                .setCustomId('weapons')
-                .setPlaceholder('Scegli 2 armi')
-                .setMinValues(2)
-                .setMaxValues(2)
-                .addOptions([
-                    {
-                        label: 'Ascia Grande',
-                        value: 'first_axe',
-                    },
-                    {
-                        label: 'Accetta',
-                        value: 'first_hatchet',
-                    },
-                    {
-                        label: 'Martello',
-                        value: 'first_hammer',
-                    },
-                    {
-                        label: 'Spada e Scudo',
-                        value: 'first_sword',
-                    },
-                    {
-                        label: 'Lancia',
-                        value: 'first_spear',
-                    },
-                    {
-                        label: 'Stocco',
-                        value: 'first_rapier',
-                    },
-                    {
-                        label: 'Arco',
-                        value: 'first_box',
-                    },
-                    {
-                        label: 'Moschetto',
-                        value: 'first_musket',
-                    },
-                    {
-                        label: 'Bastone di Fuoco',
-                        value: 'first_fire',
-                    },
-                    {
-                        label: 'Guanto del Ghiaccio',
-                        value: 'first_ice',
-                    },
-                    {
-                        label: 'Bastone della Vita',
-                        value: 'first_life',
-                    },
-                    {
-                        label: 'Guanto del Vuoto',
-                        value: 'first_void',
-                    },
-                ]),
-            );
+            .addComponents(
+                new MessageSelectMenu()
+                    .setCustomId('weapons')
+                    .setPlaceholder('Scegli 2 armi')
+                    .setMinValues(2)
+                    .setMaxValues(2)
+                    .addOptions([
+                        {
+                            label: 'Ascia Grande',
+                            value: 'axe',
+                        },
+                        {
+                            label: 'Accetta',
+                            value: 'hatchet',
+                        },
+                        {
+                            label: 'Martello',
+                            value: 'hammer',
+                        },
+                        {
+                            label: 'Spada e Scudo',
+                            value: 'sword',
+                        },
+                        {
+                            label: 'Lancia',
+                            value: 'spear',
+                        },
+                        {
+                            label: 'Stocco',
+                            value: 'rapier',
+                        },
+                        {
+                            label: 'Arco',
+                            value: 'box',
+                        },
+                        {
+                            label: 'Moschetto',
+                            value: 'musket',
+                        },
+                        {
+                            label: 'Bastone di Fuoco',
+                            value: 'fire',
+                        },
+                        {
+                            label: 'Guanto del Ghiaccio',
+                            value: 'ice',
+                        },
+                        {
+                            label: 'Bastone della Vita',
+                            value: 'life',
+                        },
+                        {
+                            label: 'Guanto del Vuoto',
+                            value: 'void',
+                        },
+                    ]),
+                );
             
         await interaction.reply({content:`evento ${nome} di tipo ${tipo} è stato pubblicato nel canale ${canale}`, ephemeral: true});
 
@@ -110,11 +111,15 @@ module.exports = {
 
         await canale.send({components: [buttons], embeds: [embed]});
 
-        const collector = canale.createMessageComponentCollector({componentType: 'BUTTON'});
+        const collector = canale.createMessageComponentCollector({});
         collector.on('collect', async i => {
             if (i.customId === 'Registrati') {
 
                 await i.reply({ content: 'Scegli le tue Armi!', ephemeral: true, components: [weapons]});
+            }
+            if (i.customId === 'weapons') {
+                selectedWeapons = (i.values + '').split(',');
+                await i.reply({ content: `${i.user} hai scelto ${selectedWeapons[0]} ${selectedWeapons[1]}`, ephemeral: true});
             }
         });
 	}
