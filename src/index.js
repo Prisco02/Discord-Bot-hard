@@ -1,12 +1,15 @@
 const fs = require('node:fs'); //lettura file node.js
 const { Client, Collection, Intents } = require('discord.js'); //api discord
+const mongoose = require('mongoose');
 require('dotenv').config(); //integra le variabili globali
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
-const Database = require("./config/Database");
-const db = new Database();
-db.connect();
+//si connette al Database
+mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true})
+.then(() => console.log('Successfully connected to the database!'))
+.catch(err => console.log(err));
+
 
 //array con tutti gli eventi
 const eventFiles = fs.readdirSync('src/events').filter(file => file.endsWith('.js'));

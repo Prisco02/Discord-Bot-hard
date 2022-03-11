@@ -1,6 +1,7 @@
 const { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const EventSettings = require("./models/EventSettings");
+const eventSettings = require('../models/eventSettings');
+const collector = require('../collectors/eventCollector');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -109,18 +110,24 @@ module.exports = {
             .setColor('#0099ff')
             .setTitle(`${nome}`);
 
-        await canale.send({components: [buttons], embeds: [embed]});
+        messaggio = await canale.send({components: [buttons], embeds: [embed]});
 
-        const collector = canale.createMessageComponentCollector({});
-        collector.on('collect', async i => {
-            if (i.customId === 'Registrati') {
 
-                await i.reply({ content: 'Scegli le tue Armi!', ephemeral: true, components: [weapons]});
-            }
-            if (i.customId === 'weapons') {
-                selectedWeapons = (i.values + '').split(',');
-                await i.reply({ content: `${i.user} hai scelto ${selectedWeapons[0]} ${selectedWeapons[1]}`, ephemeral: true});
-            }
+        //Salvo i dati sul Database
+        const evento = new eventSettings({
+            channel_id: `${canale.id}`,
+            event_message_id: `${messaggio.id}`,
+            creator_id: `${interaction.user.id}`,
+            name: `${nome}`,
+            type: `${tipo}`,
+            description: `${descrizione}`
         });
+
+        evento.save()
+        .then(()=> console.log("Evento salvato sul Database"))
+        .catch(err => console.log(err));
+
+        collector.collectEvents();
+
 	}
 };
