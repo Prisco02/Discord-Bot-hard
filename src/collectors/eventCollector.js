@@ -16,10 +16,6 @@ exports.collectEvents = function collectEvents() {
      function errorFunc(error) {
         console.log(error);
      }
-     
-     cursor.forEach(iterateFunc, errorFunc);
-
-    return;
     
     for(const ev in eventi){
         const collector = ev.createMessageComponentCollector({});

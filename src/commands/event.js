@@ -127,7 +127,16 @@ module.exports = {
         .then(()=> console.log("Evento salvato sul Database"))
         .catch(err => console.log(err));
 
-        collector.collectEvents();
+        const collector = canale.createMessageComponentCollector({});
+        collector.on('collect', async i => {
+            if (i.customId === 'Registrati') {
 
+                await i.reply({ content: 'Scegli le tue Armi!', ephemeral: true, components: [weapons]});
+            }
+            if (i.customId === 'weapons') {
+                selectedWeapons = (i.values + '').split(',');
+                await i.reply({ content: `${i.user} hai scelto ${selectedWeapons[0]} ${selectedWeapons[1]}`, ephemeral: true});
+            }
+        });
 	}
 };
